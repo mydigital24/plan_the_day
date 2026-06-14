@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Planer</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+<div class="app-container">
+
+    <!-- ══ HEUTE ══════════════════════════════════════════ -->
+    <div id="tab-heute" class="tab-view active">
+        <div class="h-scroll">
+            <div class="h-hero">
+                <div class="h-hero-greeting" id="hero-greeting">Guten Morgen</div>
+                <div class="h-hero-name" id="hero-name">Marten</div>
+                <div class="h-hero-date" id="hero-date"></div>
+            </div>
+
+            <!-- Sleep countdown -->
+            <div id="heute-sleep-banner" class="h-sleep-banner" style="display:none;">
+                <span class="h-sleep-icon">🌙</span>
+                <div class="h-sleep-info">
+                    <span class="h-sleep-label">Schlafenszeit</span>
+                    <span class="h-sleep-val" id="heute-sleep-val">in 3h 20min</span>
+                </div>
+                <span class="h-sleep-time" id="heute-sleep-time">22:00</span>
+            </div>
+
+            <!-- Next event -->
+            <div class="h-next-card" id="heute-next-card" style="display:none;">
+                <div class="h-next-label">Nächstes Ereignis</div>
+                <div class="h-next-row">
+                    <span class="h-next-icon" id="heute-next-icon">📋</span>
+                    <div class="h-next-info">
+                        <span class="h-next-title" id="heute-next-title">Aufgabe</span>
+                        <span class="h-next-time" id="heute-next-time">in 30 min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="h-stats">
+                <div class="h-stat-card">
+                    <span class="h-stat-num" id="heute-stat-open">0</span>
+                    <span class="h-stat-lbl">Offen</span>
+                </div>
+                <div class="h-stat-card">
+                    <span class="h-stat-num" id="heute-stat-progress">0</span>
+                    <span class="h-stat-lbl">In Arbeit</span>
+                </div>
+                <div class="h-stat-card">
+                    <span class="h-stat-num" id="heute-stat-done">0</span>
+                    <span class="h-stat-lbl">Erledigt</span>
+                </div>
+            </div>
+
+            <!-- Task list -->
+            <div class="h-preview">
+                <div class="h-preview-header">
+                    <span class="h-preview-title">Heute</span>
+                    <button class="h-preview-btn" id="heute-go-timeline">Alle →</button>
+                </div>
+                <div id="heute-task-list" class="h-task-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ ANSTEHEND ══════════════════════════════════════ -->
+    <div id="tab-anstehend" class="tab-view">
+        <div class="ans-header">
+            <div class="ans-top-row">
+                <button id="btn-ans-today" class="ans-today-pill">Heute</button>
+                <button id="btn-ans-settings" class="ans-icon-btn">⚙</button>
+            </div>
+            <div class="week-strip" id="week-strip"></div>
+            <div class="ans-meta-row">
+                <button id="prev-week" class="ans-arrow">‹</button>
+                <span id="ans-month-label" class="ans-month-label"></span>
+                <button id="next-week" class="ans-arrow">›</button>
+            </div>
+            <div class="ans-progress-wrap">
+                <div class="ans-progress-track"><div id="ans-progress-bar" class="ans-progress-fill"></div></div>
+                <span id="ans-progress-text" class="ans-progress-text"></span>
+            </div>
+            <div id="ans-suggestion" class="ans-suggestion" style="display:none;">
+                <span id="ans-suggestion-text"></span>
+                <button id="ans-suggestion-btn" class="ans-chip-btn">Übernehmen</button>
+            </div>
+        </div>
+        <main class="ans-timeline">
+            <div id="ans-timeline" class="ans-timeline-inner"></div>
+        </main>
+    </div>
+
+    <!-- ══ EINSTELLUNGEN ══════════════════════════════════ -->
+    <div id="tab-einstellungen" class="tab-view">
+        <div class="e-header">
+            <h2 class="e-title">Einstellungen</h2>
+        </div>
+        <div class="e-scroll">
+
+            <div class="e-section">
+                <div class="e-section-label">Persönlich</div>
+                <div class="e-card">
+                    <div class="e-row">
+                        <span class="e-row-label">Name</span>
+                        <input type="text" id="settings-name" class="e-input" placeholder="Dein Name" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+
+            <div class="e-section">
+                <div class="e-section-label">Schlaf & Aufwachen</div>
+                <div class="e-card">
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">🌅 Aufstehzeit</span>
+                        </div>
+                        <input type="time" id="settings-wake-time" class="e-time-input" value="07:00">
+                    </div>
+                    <div class="e-divider"></div>
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">🌙 Schlafenszeit</span>
+                        </div>
+                        <input type="time" id="settings-sleep-time" class="e-time-input" value="22:00">
+                    </div>
+                </div>
+                <div class="e-hint">Diese Zeiten legen deinen Tagesrahmen fest und werden im Heute-Tab angezeigt.</div>
+            </div>
+
+            <div class="e-section">
+                <div class="e-section-label">Design</div>
+                <div class="e-card">
+                    <div class="e-row">
+                        <span class="e-row-label">Farbmodus</span>
+                        <div class="e-segment">
+                            <button id="theme-auto"  class="e-seg-btn active">Auto</button>
+                            <button id="theme-light" class="e-seg-btn">Hell</button>
+                            <button id="theme-dark"  class="e-seg-btn">Dunkel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="e-section">
+                <div class="e-section-label">ntfy.sh Benachrichtigungen</div>
+                <div class="e-card">
+                    <div class="e-row">
+                        <span class="e-row-label">Topic</span>
+                        <input type="text" id="settings-ntfy-topic" class="e-input" placeholder="mein_topic" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+                    </div>
+                    <div class="e-divider"></div>
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">Testnachricht</span>
+                            <span class="e-row-desc">Verbindung prüfen</span>
+                        </div>
+                        <button id="btn-ntfy-test" class="e-action">Senden</button>
+                    </div>
+                    <div class="e-divider"></div>
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">Tagesplan senden</span>
+                            <span class="e-row-desc">Mitteilungen für heute vorplanen</span>
+                        </div>
+                        <button id="btn-ntfy-schedule" class="e-action">Planen</button>
+                    </div>
+                    <div class="e-divider"></div>
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">Testnachricht (30s)</span>
+                            <span class="e-row-desc">PWA schließen und warten</span>
+                        </div>
+                        <button id="btn-ntfy-test30s" class="e-action">Senden</button>
+                    </div>
+                    <div class="e-divider"></div>
+                    <div class="e-hint">ntfy.sh App installieren → Topic abonnieren → hier eintragen.</div>
+                </div>
+            </div>
+
+            <div class="e-section">
+                <div class="e-section-label">Mitteilungen</div>
+                <div class="e-card">
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">5 min vorher</span>
+                        </div>
+                        <button id="notify-before-toggle" class="e-action">Ein</button>
+                    </div>
+                    <div class="e-divider"></div>
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">Beim Start</span>
+                        </div>
+                        <button id="notify-start-toggle" class="e-action">Ein</button>
+                    </div>
+                    <div class="e-divider"></div>
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">Beim Ende</span>
+                        </div>
+                        <button id="notify-end-toggle" class="e-action">Ein</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="e-section">
+                <div class="e-section-label">Daten</div>
+                <div class="e-card">
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">Export</span>
+                            <span class="e-row-desc">Als JSON sichern</span>
+                        </div>
+                        <button id="btn-export-data" class="e-action">Export</button>
+                    </div>
+                    <div class="e-divider"></div>
+                    <div class="e-row">
+                        <div class="e-row-info">
+                            <span class="e-row-title">Import</span>
+                            <span class="e-row-desc">JSON-Datei laden</span>
+                        </div>
+                        <button id="btn-import-data" class="e-action">Import</button>
+                    </div>
+                    <input id="import-file-input" type="file" accept="application/json" style="display:none;">
+                </div>
+            </div>
+
+            <div class="e-section">
+                <div class="e-section-label">Design-Aufgabe</div>
+                <div class="e-card e-design-card">
+                    <div class="e-design-badge">Täglich</div>
+                    <div class="e-design-content">
+                        <div class="e-design-icon">🎨</div>
+                        <div class="e-design-text">
+                            <span class="e-design-title">Design-Reflexion</span>
+                            <span class="e-design-desc">Beobachte heute eine App. Welches Prinzip fällt dir auf?</span>
+                        </div>
+                    </div>
+                    <div class="e-design-footer">
+                        <div class="e-design-principles">
+                            <span class="e-design-chip">Klarheit</span>
+                            <span class="e-design-chip">Deferenz</span>
+                            <span class="e-design-chip">Tiefe</span>
+                        </div>
+                        <button id="btn-add-design-task" class="e-design-btn">Hinzufügen</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══ AUFGABE MODAL (Sheet) ══════════════════════════ -->
+    <div id="task-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div id="modal-sheet" class="modal-content">
+            <div class="modal-handle"></div>
+            <div class="modal-header-row">
+                <button id="modal-cancel" class="modal-nav-btn">Abbrechen</button>
+                <h3 id="modal-title">Neue Aufgabe</h3>
+                <button id="modal-save" class="modal-nav-btn modal-nav-btn--primary">Sichern</button>
+            </div>
+
+            <!-- Icon + Titel nebeneinander -->
+            <div class="modal-icon-title-row">
+                <div id="icon-display" class="icon-display">📋</div>
+                <input type="text" id="task-title" class="modal-title-input" placeholder="Titel" autocomplete="off">
+            </div>
+            <div id="icon-picker" class="icon-picker" style="display:none;"></div>
+
+            <!-- Zeiten -->
+            <div class="modal-card">
+                <div class="modal-card-row">
+                    <span class="modal-card-label">Start</span>
+                    <input type="time" id="task-time" class="modal-card-input">
+                </div>
+                <div class="modal-card-divider"></div>
+                <div class="modal-card-row">
+                    <span class="modal-card-label">Ende</span>
+                    <input type="time" id="task-end-time" class="modal-card-input">
+                </div>
+            </div>
+
+            <!-- Notizen -->
+            <div class="modal-card">
+                <textarea id="task-notes" class="modal-notes" placeholder="Notizen (optional)"></textarea>
+            </div>
+
+            <!-- Status -->
+            <div class="modal-card">
+                <div class="modal-card-row">
+                    <span class="modal-card-label">Abhakbar</span>
+                    <button type="button" id="task-checkable-btn" class="e-action">Ja</button>
+                </div>
+                <div class="modal-card-divider"></div>
+                <div class="modal-card-row">
+                    <span class="modal-card-label">Status</span>
+                    <div class="modal-status-row" id="task-status-toggle-group">
+                        <button type="button" data-status="not-started" class="modal-status-btn">●</button>
+                        <button type="button" data-status="in-progress"  class="modal-status-btn">●</button>
+                        <button type="button" data-status="done"         class="modal-status-btn">●</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Routine -->
+            <div class="modal-section-label">Wiederholen</div>
+            <div class="modal-card">
+                <div class="repeat-row">
+                    <label><input type="checkbox" id="repeat-mon"> Mo</label>
+                    <label><input type="checkbox" id="repeat-tue"> Di</label>
+                    <label><input type="checkbox" id="repeat-wed"> Mi</label>
+                    <label><input type="checkbox" id="repeat-thu"> Do</label>
+                    <label><input type="checkbox" id="repeat-fri"> Fr</label>
+                    <label><input type="checkbox" id="repeat-sat"> Sa</label>
+                    <label><input type="checkbox" id="repeat-sun"> So</label>
+                </div>
+            </div>
+
+            <!-- Mitteilungen -->
+            <div class="modal-section-label">Erinnerungen</div>
+            <div class="modal-card">
+                <div id="task-notify-toggle-group" class="modal-notify-row">
+                    <button type="button" data-target="task-notify-before" class="modal-notify-btn">5 min vorher</button>
+                    <button type="button" data-target="task-notify-start"  class="modal-notify-btn">Beim Start</button>
+                    <button type="button" data-target="task-notify-end"    class="modal-notify-btn">Beim Ende</button>
+                </div>
+                <input type="checkbox" id="task-notify-before" hidden>
+                <input type="checkbox" id="task-notify-start"  hidden>
+                <input type="checkbox" id="task-notify-end"    hidden>
+            </div>
+
+            <!-- Löschen -->
+            <button id="modal-delete" class="modal-delete-btn" style="display:none;">Aufgabe löschen</button>
+
+            <!-- hidden compat fields -->
+            <input type="text"     id="task-additional-times" hidden>
+            <div id="task-checkable-toggle" hidden></div>
+        </div>
+    </div>
+
+    <!-- ══ DOCK ═══════════════════════════════════════════ -->
+    <nav class="dock">
+        <button class="nav-btn active" data-tab="heute">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2L1 11h3v10h7v-5h2v5h7V11h3L12 2zm0 3.4l5 4.3V19h-3v-5H10v5H7V9.7l5-4.3z" fill="currentColor"/></svg>
+            <span class="nav-lbl">Heute</span>
+        </button>
+        <button class="nav-btn" id="add-task-floating">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" fill="currentColor"/></svg>
+            <span class="nav-lbl">Neu</span>
+        </button>
+        <button class="nav-btn" data-tab="anstehend">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z" fill="currentColor"/></svg>
+            <span class="nav-lbl">Planer</span>
+        </button>
+        <button class="nav-btn" data-tab="einstellungen">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.4-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" fill="currentColor"/></svg>
+            <span class="nav-lbl">Einstellungen</span>
+        </button>
+    </nav>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
