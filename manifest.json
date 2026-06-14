@@ -1,22 +1,17 @@
 {
-  "short_name": "Planner",
-  "name": "Structured Daily Planner",
+  "name": "Planer",
+  "short_name": "Planer",
+  "description": "Täglicher Planer mit Aufgaben, Ideen und Benachrichtigungen",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007AFF",
   "icons": [
     {
-      "src": "icon.png",
-      "type": "image/png",
-      "sizes": "192x192",
+      "src": "icon.jpg",
+      "sizes": "612x612",
+      "type": "image/jpeg",
       "purpose": "any maskable"
-    },
-    {
-      "src": "icon.png",
-      "type": "image/png",
-      "sizes": "512x512"
     }
-  ],
-  "start_url": "./index.html",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "display": "standalone",
-  "orientation": "portrait"
+  ]
 }
